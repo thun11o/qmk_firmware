@@ -1,0 +1,2 @@
+MATRIX_DEBUG = yes
+CONSOLE_ENABLE = yes
