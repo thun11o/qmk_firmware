@@ -10,8 +10,17 @@ tap_dance_action_t tap_dance_actions[] = {
     [OSLMO2] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_oslmo2_finished, NULL),
 };
 
+static uint8_t keys_down = 0;
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    if (!record->event.pressed) {
+    if(record->event.pressed) {
+        keys_down++;
+    }
+    else if(keys_down > 0) {
+        keys_down--;
+    }
+
+    if (keys_down == 0) {
         switch (oslmo1) {
             case OSLMO_HELD:
                 if (keycode == TD(OSLMO1)) {
