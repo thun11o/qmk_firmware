@@ -16,42 +16,31 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if(record->event.pressed) {
         keys_down++;
     }
-    else if(keys_down > 0) {
-        keys_down--;
+    else {
+        if(oslmo1 == OSLMO_HELD && keycode == TD(OSLMO1)) {
+            layer_off(1);
+            oslmo1 = OSLMO_NONE;
+        }
+
+        if(oslmo2 == OSLMO_HELD && keycode == TD(OSLMO2)) {
+            layer_off(2);
+            oslmo2 = OSLMO_NONE;
+        }
+
+        if(keys_down > 0) {
+            keys_down--;
+        }
     }
 
-    if (keys_down == 0) {
-        switch (oslmo1) {
-            case OSLMO_HELD:
-                if (keycode == TD(OSLMO1)) {
-                    layer_off(1);
-                    oslmo1 = OSLMO_NONE;
-                }
-                break;
-            case OSLMO_ONESHOT:
-                if (keycode != TD(OSLMO1)) {
-                    layer_off(1);
-                    oslmo1 = OSLMO_NONE;
-                }
-                break;
-            case OSLMO_NONE:
-                break;
+    if(keys_down == 0) {
+        if(oslmo1 == OSLMO_ONESHOT && keycode != TD(OSLMO1)) {
+            layer_off(1);
+            oslmo1 = OSLMO_NONE;
         }
-        switch (oslmo2) {
-            case OSLMO_HELD:
-                if (keycode == TD(OSLMO2)) {
-                    layer_off(2);
-                    oslmo2 = OSLMO_NONE;
-                }
-                break;
-            case OSLMO_ONESHOT:
-                if (keycode != TD(OSLMO2)) {
-                    layer_off(2);
-                    oslmo2 = OSLMO_NONE;
-                }
-                break;
-            case OSLMO_NONE:
-                break;
+
+        if(oslmo2 == OSLMO_ONESHOT && keycode != TD(OSLMO2)) {
+            layer_off(2);
+            oslmo2 = OSLMO_NONE;
         }
     }
     return true;
