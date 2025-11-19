@@ -13,6 +13,7 @@ extern oslmo_state_t oslmo2;
 enum {
     OSLMO1 = 0,
     OSLMO2,
+    TABESC,
 };
 
 void td_oslmo1_finished(tap_dance_state_t *state, void *user_data);
