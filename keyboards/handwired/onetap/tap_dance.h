@@ -14,6 +14,7 @@ enum {
     OSLMO1 = 0,
     OSLMO2,
     TABESC,
+    ALTLR,
 };
 
 void td_oslmo1_finished(tap_dance_state_t *state, void *user_data);
