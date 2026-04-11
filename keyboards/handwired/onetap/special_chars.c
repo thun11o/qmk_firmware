@@ -3,12 +3,12 @@
 #define ACTIVATE_MIN_DELAY 200
 #define ACTIVATE_MAX_DELAY 1000
 
-static bool enabled = true;
+static bool enabled             = true;
 static bool unicode_mode_manual = false;
 
-static bool pending_shifted = false;
+static bool     pending_shifted = false;
 static uint16_t pending_keycode = KC_NO;
-static uint16_t pending_timer = 0;
+static uint16_t pending_timer   = 0;
 
 enum unicode_names {
     DE_ADIA_LOWER,
@@ -22,6 +22,7 @@ enum unicode_names {
     EURO_SIGN,
 };
 
+// clang-format off
 const uint32_t PROGMEM unicode_map[] = {
     [DE_ADIA_LOWER] = 0x00E4,
     [DE_ADIA_UPPER] = 0x00C4,
@@ -33,9 +34,10 @@ const uint32_t PROGMEM unicode_map[] = {
     [SZ_SIGN_UPPER] = 0x1E9E,
     [EURO_SIGN]     = 0x20AC,
 };
+// clang-format on
 
 static bool keycode_is_candidate(uint16_t keycode) {
-    switch(keycode) {
+    switch (keycode) {
         case KC_A:
         case KC_O:
         case KC_U:
@@ -59,7 +61,7 @@ static bool is_shift_active(void) {
 static void clear_pending(void) {
     pending_shifted = false;
     pending_keycode = KC_NO;
-    pending_timer = 0;
+    pending_timer   = 0;
 }
 
 typedef struct {
@@ -70,8 +72,8 @@ typedef struct {
 
 static saved_mod_state_t save_and_clear_mod_state(void) {
     saved_mod_state_t state = {
-        .mods = get_mods(),
-        .weak_mods = get_weak_mods(),
+        .mods         = get_mods(),
+        .weak_mods    = get_weak_mods(),
         .oneshot_mods = get_oneshot_mods(),
     };
 
@@ -100,13 +102,13 @@ static void send_macos_dead_key_sequence(uint16_t accent_keycode, uint16_t base_
 
     tap_code16(accent_keycode);
 
-    if(shifted) {
+    if (shifted) {
         register_code(KC_LSFT);
     }
 
     tap_code(base_keycode);
 
-    if(shifted) {
+    if (shifted) {
         unregister_code(KC_LSFT);
     }
 
@@ -118,12 +120,12 @@ static void send_macos_umlaut(uint16_t keycode, bool shifted) {
 }
 
 static void send_macos_special(uint16_t keycode, bool shifted) {
-    if(keycode == KC_E) {
+    if (keycode == KC_E) {
         send_key_sequence(LGUI(LSFT(KC_2)));
         return;
     }
 
-    if(keycode == KC_S) {
+    if (keycode == KC_S) {
         send_key_sequence(LGUI(KC_S));
         return;
     }
@@ -132,7 +134,7 @@ static void send_macos_special(uint16_t keycode, bool shifted) {
 }
 
 static bool send_windows_special(uint16_t keycode, bool shifted) {
-    switch(keycode) {
+    switch (keycode) {
         case KC_A:
             send_key_sequence(shifted ? RALT(S(KC_Q)) : RALT(KC_Q));
             return true;
@@ -143,7 +145,7 @@ static bool send_windows_special(uint16_t keycode, bool shifted) {
             send_key_sequence(shifted ? RALT(S(KC_Y)) : RALT(KC_Y));
             return true;
         case KC_S:
-            if(shifted) {
+            if (shifted) {
                 return false;
             }
             send_key_sequence(RALT(KC_S));
@@ -157,7 +159,7 @@ static bool send_windows_special(uint16_t keycode, bool shifted) {
 }
 
 static bool send_linux_special(uint16_t keycode, bool shifted) {
-    switch(keycode) {
+    switch (keycode) {
         case KC_A:
             send_key_sequence(shifted ? RALT(S(KC_A)) : RALT(KC_A));
             return true;
@@ -185,17 +187,17 @@ static void enable(void) {
 static void toggle_enabled(void) {
     enabled = !enabled;
 
-    if(!enabled) {
+    if (!enabled) {
         clear_pending();
     }
 }
 
 bool set_unicode_mode(os_variant_t os) {
-    if(unicode_mode_manual) {
+    if (unicode_mode_manual) {
         return false;
     }
 
-    switch(os) {
+    switch (os) {
         case OS_WINDOWS:
             set_unicode_input_mode(UNICODE_MODE_WINCOMPOSE);
             break;
@@ -215,7 +217,7 @@ bool set_unicode_mode(os_variant_t os) {
 }
 
 bool process_unicode_mode(uint16_t keycode) {
-    switch(keycode) {
+    switch (keycode) {
         case UM_LNX:
             unicode_mode_manual = true;
             enable();
@@ -240,24 +242,24 @@ bool process_unicode_mode(uint16_t keycode) {
 }
 
 bool process_special_char(uint16_t keycode) {
-    if(!enabled) {
+    if (!enabled) {
         return false;
     }
 
-    if(pending_keycode != KC_NO && pending_shifted != is_shift_active()) {
+    if (pending_keycode != KC_NO && pending_shifted != is_shift_active()) {
         clear_pending();
     }
 
-    if(pending_keycode != KC_NO && timer_elapsed(pending_timer) > ACTIVATE_MAX_DELAY) {
+    if (pending_keycode != KC_NO && timer_elapsed(pending_timer) > ACTIVATE_MAX_DELAY) {
         clear_pending();
     }
 
-    if(has_non_shift_mods() || !keycode_is_candidate(keycode)) {
+    if (has_non_shift_mods() || !keycode_is_candidate(keycode)) {
         clear_pending();
         return false;
     }
 
-    if(pending_keycode != keycode) {
+    if (pending_keycode != keycode) {
         pending_shifted = is_shift_active();
         pending_keycode = keycode;
         pending_timer   = timer_read();
@@ -265,9 +267,9 @@ bool process_special_char(uint16_t keycode) {
     }
 
     const uint16_t elapsed = timer_elapsed(pending_timer);
-    if(elapsed >= ACTIVATE_MIN_DELAY && elapsed <= ACTIVATE_MAX_DELAY) {
+    if (elapsed >= ACTIVATE_MIN_DELAY && elapsed <= ACTIVATE_MAX_DELAY) {
         tap_code(KC_BSPC);
-        switch(get_unicode_input_mode()) {
+        switch (get_unicode_input_mode()) {
             case UNICODE_MODE_MACOS:
                 send_macos_special(keycode, pending_shifted);
                 break;
@@ -286,10 +288,9 @@ bool process_special_char(uint16_t keycode) {
         return true;
     }
 
-    if(elapsed < ACTIVATE_MIN_DELAY) {
+    if (elapsed < ACTIVATE_MIN_DELAY) {
         clear_pending();
-    }
-    else {
+    } else {
         pending_shifted = is_shift_active();
         pending_timer   = timer_read();
     }
