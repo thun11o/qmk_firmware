@@ -13,7 +13,6 @@ extern oslmo_state_t oslmo2;
 enum {
     OSLMO1 = 0,
     OSLMO2,
-    TABESC,
     ALTLR,
 };
 

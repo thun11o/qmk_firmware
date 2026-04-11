@@ -32,7 +32,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 tap_dance_action_t tap_dance_actions[] = {
     [OSLMO1] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_oslmo1_finished, NULL),
     [OSLMO2] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_oslmo2_finished, NULL),
-    [TABESC] = ACTION_TAP_DANCE_DOUBLE(KC_TAB, KC_ESC),
     [ALTLR]  = ACTION_TAP_DANCE_DOUBLE(KC_LALT, KC_RALT),
 };
 
